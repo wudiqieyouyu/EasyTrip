@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easytrip.mappers.SalesMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easytrip.entity.po.Sales">
+		<!--景区id-->
+		<id column="sales_id" property="salesId"  />
+		<!--目的地Id-->
+		<result column="region_id" property="regionId"  />
+		<!--商品名称-->
+		<result column="sales_name" property="salesName"  />
+		<!--价格-->
+		<result column="price" property="price"  />
+		<!--销售量-->
+		<result column="sales_number" property="salesNumber"  />
+		<!--描述-->
+		<result column="sales_desc" property="salesDesc"  />
+		<!--图片路径-->
+		<result column="img_cover" property="imgCover"  />
+		<!--0:无1:A 2:AA 3:AAA 4:AAAA 5:AAAAA-->
+		<result column="sales_level" property="salesLevel"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--地址-->
+		<result column="sales_address" property="salesAddress"  />
+		<!--开放时间-->
+		<result column="open_time" property="openTime"  />
+		<!--联系电话-->
+		<result column="tel" property="tel"  />
+		<!--景区简介-->
+		<result column="cotent" property="cotent"  />
+		<!--购买须知-->
+		<result column="purchase_info" property="purchaseInfo"  />
+		<!--产品特色-->
+		<result column="features" property="features"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 sales_id,region_id,sales_name,price,sales_number,
+		 sales_desc,img_cover,sales_level,create_time,sales_address,
+		 open_time,tel
+		 
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.salesId != null">
+			 and  sales_id = #{query.salesId}
+		</if>
+		<if test="query.regionId != null and query.regionId!=''">
+			 and  region_id = #{query.regionId}
+		</if>
+		<if test="query.salesName != null and query.salesName!=''">
+			 and  sales_name = #{query.salesName}
+		</if>
+		<if test="query.price != null and query.price!=''">
+			 and  price = #{query.price}
+		</if>
+		<if test="query.salesNumber != null">
+			 and  sales_number = #{query.salesNumber}
+		</if>
+		<if test="query.salesDesc != null and query.salesDesc!=''">
+			 and  sales_desc = #{query.salesDesc}
+		</if>
+		<if test="query.imgCover != null and query.imgCover!=''">
+			 and  img_cover = #{query.imgCover}
+		</if>
+		<if test="query.salesLevel != null">
+			 and  sales_level = #{query.salesLevel}
+		</if>
+		<if test="query.createTime != null and query.createTime!=''">
+			 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.salesAddress != null and query.salesAddress!=''">
+			 and  sales_address = #{query.salesAddress}
+		</if>
+		<if test="query.openTime != null and query.openTime!=''">
+			 and  open_time = #{query.openTime}
+		</if>
+		<if test="query.tel != null and query.tel!=''">
+			 and  tel = #{query.tel}
+		</if>
+		<if test="query.cotent != null and query.cotent!=''">
+			 and  cotent = #{query.cotent}
+		</if>
+		<if test="query.purchaseInfo != null and query.purchaseInfo!=''">
+			 and  purchase_info = #{query.purchaseInfo}
+		</if>
+		<if test="query.features != null and query.features!=''">
+			 and  features = #{query.features}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.regionIdFuzzy!= null  and query.regionIdFuzzy!=''">
+				 and  region_id like concat('%', #{query.regionIdFuzzy}, '%')
+			</if>
+			<if test="query.salesNameFuzzy!= null  and query.salesNameFuzzy!=''">
+				 and  sales_name like concat('%', #{query.salesNameFuzzy}, '%')
+			</if>
+			<if test="query.priceFuzzy!= null  and query.priceFuzzy!=''">
+				 and  price like concat('%', #{query.priceFuzzy}, '%')
+			</if>
+			<if test="query.salesIds != null and query.salesIds.length>0">
+				and sales_id in(<foreach collection="query.salesIds" separator="," item="item">#{item}</foreach>)
+			</if>
+			<if test="query.salesDescFuzzy!= null  and query.salesDescFuzzy!=''">
+				 and  sales_desc like concat('%', #{query.salesDescFuzzy}, '%')
+			</if>
+			<if test="query.imgCoverFuzzy!= null  and query.imgCoverFuzzy!=''">
+				 and  img_cover like concat('%', #{query.imgCoverFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.salesAddressFuzzy!= null  and query.salesAddressFuzzy!=''">
+				 and  sales_address like concat('%', #{query.salesAddressFuzzy}, '%')
+			</if>
+			<if test="query.openTimeFuzzy!= null  and query.openTimeFuzzy!=''">
+				 and  open_time like concat('%', #{query.openTimeFuzzy}, '%')
+			</if>
+			<if test="query.telFuzzy!= null  and query.telFuzzy!=''">
+				 and  tel like concat('%', #{query.telFuzzy}, '%')
+			</if>
+			<if test="query.cotentFuzzy!= null  and query.cotentFuzzy!=''">
+				 and  cotent like concat('%', #{query.cotentFuzzy}, '%')
+			</if>
+			<if test="query.purchaseInfoFuzzy!= null  and query.purchaseInfoFuzzy!=''">
+				 and  purchase_info like concat('%', #{query.purchaseInfoFuzzy}, '%')
+			</if>
+			<if test="query.featuresFuzzy!= null  and query.featuresFuzzy!=''">
+				 and  features like concat('%', #{query.featuresFuzzy}, '%')
+			</if>
+			<if test="query.minPrice != null and query.minPrice!=''">
+				<![CDATA[and  price >= #{query.minPrice} ]]>
+			</if>
+			<if test="query.maxPrice != null and query.maxPrice!=''">
+				<![CDATA[and  price < #{query.maxPrice} ]]>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" />
+		<if test="query.showDetail == true and query.showDetail!=' ' and query.showDetail!=null">
+			,cotent,purchase_info,features
+		</if>
+		     FROM sales <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM sales <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easytrip.entity.po.Sales">
+		<selectKey keyProperty="bean.salesId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO sales
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.regionId != null">
+				 region_id,
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name,
+			</if>
+			<if test="bean.price != null">
+				 price,
+			</if>
+			<if test="bean.salesNumber != null">
+				 sales_number,
+			</if>
+			<if test="bean.salesDesc != null">
+				 sales_desc,
+			</if>
+			<if test="bean.imgCover != null">
+				 img_cover,
+			</if>
+			<if test="bean.salesLevel != null">
+				 sales_level,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.salesAddress != null">
+				 sales_address,
+			</if>
+			<if test="bean.openTime != null">
+				 open_time,
+			</if>
+			<if test="bean.tel != null">
+				 tel,
+			</if>
+			<if test="bean.cotent != null">
+				 cotent,
+			</if>
+			<if test="bean.purchaseInfo != null">
+				 purchase_info,
+			</if>
+			<if test="bean.features != null">
+				 features,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.regionId!=null">
+				 #{bean.regionId},
+			</if>
+			<if test="bean.salesName!=null">
+				 #{bean.salesName},
+			</if>
+			<if test="bean.price!=null">
+				 #{bean.price},
+			</if>
+			<if test="bean.salesNumber!=null">
+				 #{bean.salesNumber},
+			</if>
+			<if test="bean.salesDesc!=null">
+				 #{bean.salesDesc},
+			</if>
+			<if test="bean.imgCover!=null">
+				 #{bean.imgCover},
+			</if>
+			<if test="bean.salesLevel!=null">
+				 #{bean.salesLevel},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.salesAddress!=null">
+				 #{bean.salesAddress},
+			</if>
+			<if test="bean.openTime!=null">
+				 #{bean.openTime},
+			</if>
+			<if test="bean.tel!=null">
+				 #{bean.tel},
+			</if>
+			<if test="bean.cotent!=null">
+				 #{bean.cotent},
+			</if>
+			<if test="bean.purchaseInfo!=null">
+				 #{bean.purchaseInfo},
+			</if>
+			<if test="bean.features!=null">
+				 #{bean.features},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easytrip.entity.po.Sales">
+		 INSERT INTO sales
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.salesId != null">
+				 sales_id,
+			</if>
+			<if test="bean.regionId != null">
+				 region_id,
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name,
+			</if>
+			<if test="bean.price != null">
+				 price,
+			</if>
+			<if test="bean.salesNumber != null">
+				 sales_number,
+			</if>
+			<if test="bean.salesDesc != null">
+				 sales_desc,
+			</if>
+			<if test="bean.imgCover != null">
+				 img_cover,
+			</if>
+			<if test="bean.salesLevel != null">
+				 sales_level,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.salesAddress != null">
+				 sales_address,
+			</if>
+			<if test="bean.openTime != null">
+				 open_time,
+			</if>
+			<if test="bean.tel != null">
+				 tel,
+			</if>
+			<if test="bean.cotent != null">
+				 cotent,
+			</if>
+			<if test="bean.purchaseInfo != null">
+				 purchase_info,
+			</if>
+			<if test="bean.features != null">
+				 features,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.salesId!=null">
+				 #{bean.salesId},
+			</if>
+			<if test="bean.regionId!=null">
+				 #{bean.regionId},
+			</if>
+			<if test="bean.salesName!=null">
+				 #{bean.salesName},
+			</if>
+			<if test="bean.price!=null">
+				 #{bean.price},
+			</if>
+			<if test="bean.salesNumber!=null">
+				 #{bean.salesNumber},
+			</if>
+			<if test="bean.salesDesc!=null">
+				 #{bean.salesDesc},
+			</if>
+			<if test="bean.imgCover!=null">
+				 #{bean.imgCover},
+			</if>
+			<if test="bean.salesLevel!=null">
+				 #{bean.salesLevel},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.salesAddress!=null">
+				 #{bean.salesAddress},
+			</if>
+			<if test="bean.openTime!=null">
+				 #{bean.openTime},
+			</if>
+			<if test="bean.tel!=null">
+				 #{bean.tel},
+			</if>
+			<if test="bean.cotent!=null">
+				 #{bean.cotent},
+			</if>
+			<if test="bean.purchaseInfo!=null">
+				 #{bean.purchaseInfo},
+			</if>
+			<if test="bean.features!=null">
+				 #{bean.features},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.regionId!=null">
+				 region_id = VALUES(region_id),
+			</if>
+			<if test="bean.salesName!=null">
+				 sales_name = VALUES(sales_name),
+			</if>
+			<if test="bean.price!=null">
+				 price = VALUES(price),
+			</if>
+			<if test="bean.salesNumber!=null">
+				 sales_number = VALUES(sales_number),
+			</if>
+			<if test="bean.salesDesc!=null">
+				 sales_desc = VALUES(sales_desc),
+			</if>
+			<if test="bean.imgCover!=null">
+				 img_cover = VALUES(img_cover),
+			</if>
+			<if test="bean.salesLevel!=null">
+				 sales_level = VALUES(sales_level),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.salesAddress!=null">
+				 sales_address = VALUES(sales_address),
+			</if>
+			<if test="bean.openTime!=null">
+				 open_time = VALUES(open_time),
+			</if>
+			<if test="bean.tel!=null">
+				 tel = VALUES(tel),
+			</if>
+			<if test="bean.cotent!=null">
+				 cotent = VALUES(cotent),
+			</if>
+			<if test="bean.purchaseInfo!=null">
+				 purchase_info = VALUES(purchase_info),
+			</if>
+			<if test="bean.features!=null">
+				 features = VALUES(features),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easytrip.entity.po.Sales" useGeneratedKeys="true" keyProperty="salesId">
+		 INSERT INTO sales(
+			 region_id,
+			 sales_name,
+			 price,
+			 sales_number,
+			 sales_desc,
+			 img_cover,
+			 sales_level,
+			 create_time,
+			 sales_address,
+			 open_time,
+			 tel,
+			 cotent,
+			 purchase_info,
+			 features
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.regionId},
+				 #{item.salesName},
+				 #{item.price},
+				 #{item.salesNumber},
+				 #{item.salesDesc},
+				 #{item.imgCover},
+				 #{item.salesLevel},
+				 #{item.createTime},
+				 #{item.salesAddress},
+				 #{item.openTime},
+				 #{item.tel},
+				 #{item.cotent},
+				 #{item.purchaseInfo},
+				 #{item.features}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easytrip.entity.po.Sales">
+		 INSERT INTO sales(
+			 region_id,
+			 sales_name,
+			 price,
+			 sales_number,
+			 sales_desc,
+			 img_cover,
+			 sales_level,
+			 create_time,
+			 sales_address,
+			 open_time,
+			 tel,
+			 cotent,
+			 purchase_info,
+			 features
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.regionId},
+				 #{item.salesName},
+				 #{item.price},
+				 #{item.salesNumber},
+				 #{item.salesDesc},
+				 #{item.imgCover},
+				 #{item.salesLevel},
+				 #{item.createTime},
+				 #{item.salesAddress},
+				 #{item.openTime},
+				 #{item.tel},
+				 #{item.cotent},
+				 #{item.purchaseInfo},
+				 #{item.features}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			region_id = VALUES(region_id),
+			sales_name = VALUES(sales_name),
+			price = VALUES(price),
+			sales_number = VALUES(sales_number),
+			sales_desc = VALUES(sales_desc),
+			img_cover = VALUES(img_cover),
+			sales_level = VALUES(sales_level),
+			create_time = VALUES(create_time),
+			sales_address = VALUES(sales_address),
+			open_time = VALUES(open_time),
+			tel = VALUES(tel),
+			cotent = VALUES(cotent),
+			purchase_info = VALUES(purchase_info),
+			features = VALUES(features)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easytrip.entity.query.SalesQuery">
+		 UPDATE sales
+ 		 <set> 
+			<if test="bean.regionId != null">
+				 region_id = #{bean.regionId},
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name = #{bean.salesName},
+			</if>
+			<if test="bean.price != null">
+				 price = #{bean.price},
+			</if>
+			<if test="bean.salesNumber != null">
+				 sales_number = #{bean.salesNumber},
+			</if>
+			<if test="bean.salesDesc != null">
+				 sales_desc = #{bean.salesDesc},
+			</if>
+			<if test="bean.imgCover != null">
+				 img_cover = #{bean.imgCover},
+			</if>
+			<if test="bean.salesLevel != null">
+				 sales_level = #{bean.salesLevel},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.salesAddress != null">
+				 sales_address = #{bean.salesAddress},
+			</if>
+			<if test="bean.openTime != null">
+				 open_time = #{bean.openTime},
+			</if>
+			<if test="bean.tel != null">
+				 tel = #{bean.tel},
+			</if>
+			<if test="bean.cotent != null">
+				 cotent = #{bean.cotent},
+			</if>
+			<if test="bean.purchaseInfo != null">
+				 purchase_info = #{bean.purchaseInfo},
+			</if>
+			<if test="bean.features != null">
+				 features = #{bean.features},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from sales
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据SalesId修改-->
+	<update id="updateBySalesId" parameterType="com.easytrip.entity.po.Sales">
+		 UPDATE sales
+ 		 <set> 
+			<if test="bean.regionId != null">
+				 region_id = #{bean.regionId},
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name = #{bean.salesName},
+			</if>
+			<if test="bean.price != null">
+				 price = #{bean.price},
+			</if>
+			<if test="bean.salesNumber != null">
+				 sales_number = #{bean.salesNumber},
+			</if>
+			<if test="bean.salesDesc != null">
+				 sales_desc = #{bean.salesDesc},
+			</if>
+			<if test="bean.imgCover != null">
+				 img_cover = #{bean.imgCover},
+			</if>
+			<if test="bean.salesLevel != null">
+				 sales_level = #{bean.salesLevel},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.salesAddress != null">
+				 sales_address = #{bean.salesAddress},
+			</if>
+			<if test="bean.openTime != null">
+				 open_time = #{bean.openTime},
+			</if>
+			<if test="bean.tel != null">
+				 tel = #{bean.tel},
+			</if>
+			<if test="bean.cotent != null">
+				 cotent = #{bean.cotent},
+			</if>
+			<if test="bean.purchaseInfo != null">
+				 purchase_info = #{bean.purchaseInfo},
+			</if>
+			<if test="bean.features != null">
+				 features = #{bean.features},
+			</if>
+ 		 </set>
+ 		 where sales_id=#{salesId}
+	</update>
+
+	<!-- 根据SalesId删除-->
+	<delete id="deleteBySalesId">
+		delete from sales where sales_id=#{salesId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectBySalesId" resultMap="base_result_map" >
+		select <include refid="base_column_list" />
+		,cotent,purchase_info,features
+
+	from sales where sales_id=#{salesId}
+	</select>
+
+	<select id="selectSalesListById" resultMap="base_result_map">
+		select <include refid="base_column_list"></include> from sales where sales_id in
+		(<foreach collection="saleIdList" item="item" separator="," >(#{item})</foreach>)
+	</select>
+</mapper>

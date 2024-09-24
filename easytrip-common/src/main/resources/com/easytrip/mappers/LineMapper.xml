@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easytrip.mappers.LineMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easytrip.entity.po.Line">
+		<!--线路id-->
+		<id column="line_id" property="lineId"  />
+		<!--线路名称-->
+		<result column="line_name" property="lineName"  />
+		<!--线路描述-->
+		<result column="description" property="description"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--上次更新时间-->
+		<result column="last_update_time" property="lastUpdateTime"  />
+		<!--地区id-->
+		<result column="region_id" property="regionId"  />
+		<!--地区名字-->
+		<result column="region_name" property="regionName"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 line_id,line_name,description,create_time,last_update_time,
+		 region_id,region_name
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.lineId != null">
+			 and  line_id = #{query.lineId}
+		</if>
+		<if test="query.lineName != null and query.lineName!=''">
+			 and  line_name = #{query.lineName}
+		</if>
+		<if test="query.description != null and query.description!=''">
+			 and  description = #{query.description}
+		</if>
+		<if test="query.createTime != null and query.createTime!=''">
+			 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.lastUpdateTime != null and query.lastUpdateTime!=''">
+			 <![CDATA[ and  last_update_time=str_to_date(#{query.lastUpdateTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.regionId != null">
+			 and  region_id = #{query.regionId}
+		</if>
+		<if test="query.regionName != null and query.regionName!=''">
+			 and  region_name = #{query.regionName}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.lineNameFuzzy!= null  and query.lineNameFuzzy!=''">
+				 and  line_name like concat('%', #{query.lineNameFuzzy}, '%')
+			</if>
+			<if test="query.descriptionFuzzy!= null  and query.descriptionFuzzy!=''">
+				 and  description like concat('%', #{query.descriptionFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.lastUpdateTimeStart!= null and query.lastUpdateTimeStart!=''">
+				 <![CDATA[ and  last_update_time>=str_to_date(#{query.lastUpdateTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.lastUpdateTimeEnd!= null and query.lastUpdateTimeEnd!=''">
+				 <![CDATA[ and  last_update_time< date_sub(str_to_date(#{query.lastUpdateTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.regionNameFuzzy!= null  and query.regionNameFuzzy!=''">
+				 and  region_name like concat('%', #{query.regionNameFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM line <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM line <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easytrip.entity.po.Line">
+		<selectKey keyProperty="bean.lineId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO line
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.lineName != null">
+				 line_name,
+			</if>
+			<if test="bean.description != null">
+				 description,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time,
+			</if>
+			<if test="bean.regionId != null">
+				 region_id,
+			</if>
+			<if test="bean.regionName != null">
+				 region_name,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.lineName!=null">
+				 #{bean.lineName},
+			</if>
+			<if test="bean.description!=null">
+				 #{bean.description},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.regionId!=null">
+				 #{bean.regionId},
+			</if>
+			<if test="bean.regionName!=null">
+				 #{bean.regionName},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easytrip.entity.po.Line">
+		 INSERT INTO line
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.lineId != null">
+				 line_id,
+			</if>
+			<if test="bean.lineName != null">
+				 line_name,
+			</if>
+			<if test="bean.description != null">
+				 description,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time,
+			</if>
+			<if test="bean.regionId != null">
+				 region_id,
+			</if>
+			<if test="bean.regionName != null">
+				 region_name,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.lineId!=null">
+				 #{bean.lineId},
+			</if>
+			<if test="bean.lineName!=null">
+				 #{bean.lineName},
+			</if>
+			<if test="bean.description!=null">
+				 #{bean.description},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.regionId!=null">
+				 #{bean.regionId},
+			</if>
+			<if test="bean.regionName!=null">
+				 #{bean.regionName},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.lineName!=null">
+				 line_name = VALUES(line_name),
+			</if>
+			<if test="bean.description!=null">
+				 description = VALUES(description),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.lastUpdateTime!=null">
+				 last_update_time = VALUES(last_update_time),
+			</if>
+			<if test="bean.regionId!=null">
+				 region_id = VALUES(region_id),
+			</if>
+			<if test="bean.regionName!=null">
+				 region_name = VALUES(region_name),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easytrip.entity.po.Line" useGeneratedKeys="true" keyProperty="lineId">
+		 INSERT INTO line(
+			 line_name,
+			 description,
+			 create_time,
+			 last_update_time,
+			 region_id,
+			 region_name
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.lineName},
+				 #{item.description},
+				 #{item.createTime},
+				 #{item.lastUpdateTime},
+				 #{item.regionId},
+				 #{item.regionName}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easytrip.entity.po.Line">
+		 INSERT INTO line(
+			 line_name,
+			 description,
+			 create_time,
+			 last_update_time,
+			 region_id,
+			 region_name
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.lineName},
+				 #{item.description},
+				 #{item.createTime},
+				 #{item.lastUpdateTime},
+				 #{item.regionId},
+				 #{item.regionName}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			line_name = VALUES(line_name),
+			description = VALUES(description),
+			create_time = VALUES(create_time),
+			last_update_time = VALUES(last_update_time),
+			region_id = VALUES(region_id),
+			region_name = VALUES(region_name)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easytrip.entity.query.LineQuery">
+		 UPDATE line
+ 		 <set> 
+			<if test="bean.lineName != null">
+				 line_name = #{bean.lineName},
+			</if>
+			<if test="bean.description != null">
+				 description = #{bean.description},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time = #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.regionId != null">
+				 region_id = #{bean.regionId},
+			</if>
+			<if test="bean.regionName != null">
+				 region_name = #{bean.regionName},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from line
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据LineId修改-->
+	<update id="updateByLineId" parameterType="com.easytrip.entity.po.Line">
+		 UPDATE line
+ 		 <set> 
+			<if test="bean.lineName != null">
+				 line_name = #{bean.lineName},
+			</if>
+			<if test="bean.description != null">
+				 description = #{bean.description},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.lastUpdateTime != null">
+				 last_update_time = #{bean.lastUpdateTime},
+			</if>
+			<if test="bean.regionId != null">
+				 region_id = #{bean.regionId},
+			</if>
+			<if test="bean.regionName != null">
+				 region_name = #{bean.regionName},
+			</if>
+ 		 </set>
+ 		 where line_id=#{lineId}
+	</update>
+
+	<!-- 根据LineId删除-->
+	<delete id="deleteByLineId">
+		delete from line where line_id=#{lineId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByLineId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from line where line_id=#{lineId}
+	</select>
+
+</mapper>

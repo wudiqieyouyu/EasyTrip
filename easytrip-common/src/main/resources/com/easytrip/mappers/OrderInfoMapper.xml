@@ -1,0 +1,346 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easytrip.mappers.OrderInfoMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easytrip.entity.po.OrderInfo">
+		<!---->
+		<result column="order_id" property="orderId"  />
+		<!--景点id-->
+		<result column="sales_id" property="salesId"  />
+		<!--用户id-->
+		<result column="user_id" property="userId"  />
+		<!--景点名字-->
+		<result column="sales_name" property="salesName"  />
+		<!--用户名-->
+		<result column="user_name" property="userName"  />
+		<!--创建时间-->
+		<result column="create_time" property="createTime"  />
+		<!--价格-->
+		<result column="price" property="price"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 order_id,sales_id,user_id,sales_name,user_name,
+		 create_time,price
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.orderId != null and query.orderId!=''">
+			 and  order_id = #{query.orderId}
+		</if>
+		<if test="query.salesId != null">
+			 and  sales_id = #{query.salesId}
+		</if>
+		<if test="query.userId != null">
+			 and  user_id = #{query.userId}
+		</if>
+		<if test="query.salesName != null and query.salesName!=''">
+			 and  sales_name = #{query.salesName}
+		</if>
+		<if test="query.userName != null and query.userName!=''">
+			 and  user_name = #{query.userName}
+		</if>
+		<if test="query.createTime != null and query.createTime!=''">
+			 <![CDATA[ and  create_time=str_to_date(#{query.createTime}, '%Y-%m-%d') ]]>
+		</if>
+		<if test="query.price != null">
+			 and  price = #{query.price}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.orderIdFuzzy!= null  and query.orderIdFuzzy!=''">
+				 and  order_id like concat('%', #{query.orderIdFuzzy}, '%')
+			</if>
+			<if test="query.salesNameFuzzy!= null  and query.salesNameFuzzy!=''">
+				 and  sales_name like concat('%', #{query.salesNameFuzzy}, '%')
+			</if>
+			<if test="query.userNameFuzzy!= null  and query.userNameFuzzy!=''">
+				 and  user_name like concat('%', #{query.userNameFuzzy}, '%')
+			</if>
+			<if test="query.createTimeStart!= null and query.createTimeStart!=''">
+				 <![CDATA[ and  create_time>=str_to_date(#{query.createTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createTimeEnd!= null and query.createTimeEnd!=''">
+				 <![CDATA[ and  create_time< date_sub(str_to_date(#{query.createTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM order_info <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM order_info <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easytrip.entity.po.OrderInfo">
+		 INSERT INTO order_info
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.orderId != null">
+				 order_id,
+			</if>
+			<if test="bean.salesId != null">
+				 sales_id,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name,
+			</if>
+			<if test="bean.userName != null">
+				 user_name,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.price != null">
+				 price,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.orderId!=null">
+				 #{bean.orderId},
+			</if>
+			<if test="bean.salesId!=null">
+				 #{bean.salesId},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.salesName!=null">
+				 #{bean.salesName},
+			</if>
+			<if test="bean.userName!=null">
+				 #{bean.userName},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.price!=null">
+				 #{bean.price},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easytrip.entity.po.OrderInfo">
+		 INSERT INTO order_info
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.orderId != null">
+				 order_id,
+			</if>
+			<if test="bean.salesId != null">
+				 sales_id,
+			</if>
+			<if test="bean.userId != null">
+				 user_id,
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name,
+			</if>
+			<if test="bean.userName != null">
+				 user_name,
+			</if>
+			<if test="bean.createTime != null">
+				 create_time,
+			</if>
+			<if test="bean.price != null">
+				 price,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.orderId!=null">
+				 #{bean.orderId},
+			</if>
+			<if test="bean.salesId!=null">
+				 #{bean.salesId},
+			</if>
+			<if test="bean.userId!=null">
+				 #{bean.userId},
+			</if>
+			<if test="bean.salesName!=null">
+				 #{bean.salesName},
+			</if>
+			<if test="bean.userName!=null">
+				 #{bean.userName},
+			</if>
+			<if test="bean.createTime!=null">
+				 #{bean.createTime},
+			</if>
+			<if test="bean.price!=null">
+				 #{bean.price},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.orderId!=null">
+				 order_id = VALUES(order_id),
+			</if>
+			<if test="bean.salesId!=null">
+				 sales_id = VALUES(sales_id),
+			</if>
+			<if test="bean.userId!=null">
+				 user_id = VALUES(user_id),
+			</if>
+			<if test="bean.salesName!=null">
+				 sales_name = VALUES(sales_name),
+			</if>
+			<if test="bean.userName!=null">
+				 user_name = VALUES(user_name),
+			</if>
+			<if test="bean.createTime!=null">
+				 create_time = VALUES(create_time),
+			</if>
+			<if test="bean.price!=null">
+				 price = VALUES(price),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easytrip.entity.po.OrderInfo">
+		 INSERT INTO order_info(
+			 order_id,
+			 sales_id,
+			 user_id,
+			 sales_name,
+			 user_name,
+			 create_time,
+			 price
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.orderId},
+				 #{item.salesId},
+				 #{item.userId},
+				 #{item.salesName},
+				 #{item.userName},
+				 #{item.createTime},
+				 #{item.price}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easytrip.entity.po.OrderInfo">
+		 INSERT INTO order_info(
+			 order_id,
+			 sales_id,
+			 user_id,
+			 sales_name,
+			 user_name,
+			 create_time,
+			 price
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.orderId},
+				 #{item.salesId},
+				 #{item.userId},
+				 #{item.salesName},
+				 #{item.userName},
+				 #{item.createTime},
+				 #{item.price}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			order_id = VALUES(order_id),
+			sales_id = VALUES(sales_id),
+			user_id = VALUES(user_id),
+			sales_name = VALUES(sales_name),
+			user_name = VALUES(user_name),
+			create_time = VALUES(create_time),
+			price = VALUES(price)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easytrip.entity.query.OrderInfoQuery">
+		 UPDATE order_info
+ 		 <set> 
+			<if test="bean.orderId != null">
+				 order_id = #{bean.orderId},
+			</if>
+			<if test="bean.salesId != null">
+				 sales_id = #{bean.salesId},
+			</if>
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name = #{bean.salesName},
+			</if>
+			<if test="bean.userName != null">
+				 user_name = #{bean.userName},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.price != null">
+				 price = #{bean.price},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from order_info
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据OrderId修改-->
+	<update id="updateByOrderId" parameterType="com.easytrip.entity.po.OrderInfo">
+		 UPDATE order_info
+ 		 <set> 
+			<if test="bean.salesId != null">
+				 sales_id = #{bean.salesId},
+			</if>
+			<if test="bean.userId != null">
+				 user_id = #{bean.userId},
+			</if>
+			<if test="bean.salesName != null">
+				 sales_name = #{bean.salesName},
+			</if>
+			<if test="bean.userName != null">
+				 user_name = #{bean.userName},
+			</if>
+			<if test="bean.createTime != null">
+				 create_time = #{bean.createTime},
+			</if>
+			<if test="bean.price != null">
+				 price = #{bean.price},
+			</if>
+ 		 </set>
+ 		 where order_id=#{orderId}
+	</update>
+
+	<!-- 根据OrderId删除-->
+	<delete id="deleteByOrderId">
+		delete from order_info where order_id=#{orderId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByOrderId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from order_info where order_id=#{orderId}
+	</select>
+
+</mapper>

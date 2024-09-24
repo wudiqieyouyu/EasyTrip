@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easytrip.mappers.RegionsMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easytrip.entity.po.Regions">
+		<!--地区id-->
+		<result column="region_id" property="regionId"  />
+		<!--地区名字-->
+		<result column="region_name" property="regionName"  />
+		<!--父级地区id -->
+		<result column="parent_region_id" property="parentRegionId"  />
+		<!--0:洲 1:国 2:省/区域 3 市-->
+		<result column="region_category" property="regionCategory"  />
+		<!--官方语言-->
+		<result column="language" property="language"  />
+		<!--面积 单位是平方公里-->
+		<result column="area" property="area"  />
+		<!--货币种类 0:美元 1:欧元 2:人民币 3:日元 4: 英镑
+5:加拿大元 6:澳大利亚元 7:印尼盾 8 :泰铢 9:卢比
+10:其他-->
+		<result column="currency" property="currency"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 region_id,region_name,parent_region_id,region_category,language,
+		 area,currency
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.regionId != null">
+			 and  region_id = #{query.regionId}
+		</if>
+		<if test="query.regionName != null and query.regionName!=''">
+			 and  region_name = #{query.regionName}
+		</if>
+		<if test="query.parentRegionId != null">
+			 and  parent_region_id = #{query.parentRegionId}
+		</if>
+		<if test="query.regionCategory != null">
+			 and  region_category = #{query.regionCategory}
+		</if>
+		<if test="query.language != null and query.language!=''">
+			 and  language = #{query.language}
+		</if>
+		<if test="query.area != null">
+			 and  area = #{query.area}
+		</if>
+		<if test="query.currency != null">
+			 and  currency = #{query.currency}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.regionNameFuzzy!= null  and query.regionNameFuzzy!=''">
+				 and  region_name like concat('%', #{query.regionNameFuzzy}, '%')
+			</if>
+			<if test="query.languageFuzzy!= null  and query.languageFuzzy!=''">
+				 and  language like concat('%', #{query.languageFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM regions <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM regions <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easytrip.entity.po.Regions">
+		 INSERT INTO regions
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.regionId != null">
+				 region_id,
+			</if>
+			<if test="bean.regionName != null">
+				 region_name,
+			</if>
+			<if test="bean.parentRegionId != null">
+				 parent_region_id,
+			</if>
+			<if test="bean.regionCategory != null">
+				 region_category,
+			</if>
+			<if test="bean.language != null">
+				 language,
+			</if>
+			<if test="bean.area != null">
+				 area,
+			</if>
+			<if test="bean.currency != null">
+				 currency,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.regionId!=null">
+				 #{bean.regionId},
+			</if>
+			<if test="bean.regionName!=null">
+				 #{bean.regionName},
+			</if>
+			<if test="bean.parentRegionId!=null">
+				 #{bean.parentRegionId},
+			</if>
+			<if test="bean.regionCategory!=null">
+				 #{bean.regionCategory},
+			</if>
+			<if test="bean.language!=null">
+				 #{bean.language},
+			</if>
+			<if test="bean.area!=null">
+				 #{bean.area},
+			</if>
+			<if test="bean.currency!=null">
+				 #{bean.currency},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easytrip.entity.po.Regions">
+		 INSERT INTO regions
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.regionId != null">
+				 region_id,
+			</if>
+			<if test="bean.regionName != null">
+				 region_name,
+			</if>
+			<if test="bean.parentRegionId != null">
+				 parent_region_id,
+			</if>
+			<if test="bean.regionCategory != null">
+				 region_category,
+			</if>
+			<if test="bean.language != null">
+				 language,
+			</if>
+			<if test="bean.area != null">
+				 area,
+			</if>
+			<if test="bean.currency != null">
+				 currency,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.regionId!=null">
+				 #{bean.regionId},
+			</if>
+			<if test="bean.regionName!=null">
+				 #{bean.regionName},
+			</if>
+			<if test="bean.parentRegionId!=null">
+				 #{bean.parentRegionId},
+			</if>
+			<if test="bean.regionCategory!=null">
+				 #{bean.regionCategory},
+			</if>
+			<if test="bean.language!=null">
+				 #{bean.language},
+			</if>
+			<if test="bean.area!=null">
+				 #{bean.area},
+			</if>
+			<if test="bean.currency!=null">
+				 #{bean.currency},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.regionId!=null">
+				 region_id = VALUES(region_id),
+			</if>
+			<if test="bean.regionName!=null">
+				 region_name = VALUES(region_name),
+			</if>
+			<if test="bean.parentRegionId!=null">
+				 parent_region_id = VALUES(parent_region_id),
+			</if>
+			<if test="bean.regionCategory!=null">
+				 region_category = VALUES(region_category),
+			</if>
+			<if test="bean.language!=null">
+				 language = VALUES(language),
+			</if>
+			<if test="bean.area!=null">
+				 area = VALUES(area),
+			</if>
+			<if test="bean.currency!=null">
+				 currency = VALUES(currency),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easytrip.entity.po.Regions">
+		 INSERT INTO regions(
+			 region_id,
+			 region_name,
+			 parent_region_id,
+			 region_category,
+			 language,
+			 area,
+			 currency
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.regionId},
+				 #{item.regionName},
+				 #{item.parentRegionId},
+				 #{item.regionCategory},
+				 #{item.language},
+				 #{item.area},
+				 #{item.currency}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easytrip.entity.po.Regions">
+		 INSERT INTO regions(
+			 region_id,
+			 region_name,
+			 parent_region_id,
+			 region_category,
+			 language,
+			 area,
+			 currency
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.regionId},
+				 #{item.regionName},
+				 #{item.parentRegionId},
+				 #{item.regionCategory},
+				 #{item.language},
+				 #{item.area},
+				 #{item.currency}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			region_id = VALUES(region_id),
+			region_name = VALUES(region_name),
+			parent_region_id = VALUES(parent_region_id),
+			region_category = VALUES(region_category),
+			language = VALUES(language),
+			area = VALUES(area),
+			currency = VALUES(currency)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easytrip.entity.query.RegionsQuery">
+		 UPDATE regions
+ 		 <set> 
+			<if test="bean.regionId != null">
+				 region_id = #{bean.regionId},
+			</if>
+			<if test="bean.regionName != null">
+				 region_name = #{bean.regionName},
+			</if>
+			<if test="bean.parentRegionId != null">
+				 parent_region_id = #{bean.parentRegionId},
+			</if>
+			<if test="bean.regionCategory != null">
+				 region_category = #{bean.regionCategory},
+			</if>
+			<if test="bean.language != null">
+				 language = #{bean.language},
+			</if>
+			<if test="bean.area != null">
+				 area = #{bean.area},
+			</if>
+			<if test="bean.currency != null">
+				 currency = #{bean.currency},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from regions
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据RegionId修改-->
+	<update id="updateByRegionId" parameterType="com.easytrip.entity.po.Regions">
+		 UPDATE regions
+ 		 <set> 
+			<if test="bean.regionName != null">
+				 region_name = #{bean.regionName},
+			</if>
+			<if test="bean.parentRegionId != null">
+				 parent_region_id = #{bean.parentRegionId},
+			</if>
+			<if test="bean.regionCategory != null">
+				 region_category = #{bean.regionCategory},
+			</if>
+			<if test="bean.language != null">
+				 language = #{bean.language},
+			</if>
+			<if test="bean.area != null">
+				 area = #{bean.area},
+			</if>
+			<if test="bean.currency != null">
+				 currency = #{bean.currency},
+			</if>
+ 		 </set>
+ 		 where region_id=#{regionId}
+	</update>
+
+	<!-- 根据RegionId删除-->
+	<delete id="deleteByRegionId">
+		delete from regions where region_id=#{regionId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByRegionId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from regions where region_id=#{regionId}
+	</select>
+
+</mapper>

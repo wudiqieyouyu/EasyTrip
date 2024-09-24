@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easytrip.mappers.Line2SalesMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easytrip.entity.po.Line2Sales">
+		<!---->
+		<result column="line_id" property="lineId"  />
+		<!---->
+		<result column="sales_id" property="salesId"  />
+		<!--游玩时间-->
+		<result column="play_time" property="playTime"  />
+		<!--排序-->
+		<result column="sort" property="sort"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 line_id,sales_id,play_time,sort
+	</sql>
+
+	<sql id="base_condition_filed">
+		<if test="query.lineId != null">
+			 and  line_id = #{query.lineId}
+		</if>
+		<if test="query.salesId != null">
+			 and  sales_id = #{query.salesId}
+		</if>
+		<if test="query.playTime != null and query.playTime!=''">
+			 and  play_time = #{query.playTime}
+		</if>
+		<if test="query.sort != null">
+			 and  sort = #{query.sort}
+		</if>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+		<where>
+			<include refid="base_condition_filed" />
+			<if test="query.playTimeFuzzy!= null  and query.playTimeFuzzy!=''">
+				 and  play_time like concat('%', #{query.playTimeFuzzy}, '%')
+			</if>
+		</where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM line_2_sales <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM line_2_sales <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easytrip.entity.po.Line2Sales">
+		 INSERT INTO line_2_sales
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.lineId != null">
+				 line_id,
+			</if>
+			<if test="bean.salesId != null">
+				 sales_id,
+			</if>
+			<if test="bean.playTime != null">
+				 play_time,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.lineId!=null">
+				 #{bean.lineId},
+			</if>
+			<if test="bean.salesId!=null">
+				 #{bean.salesId},
+			</if>
+			<if test="bean.playTime!=null">
+				 #{bean.playTime},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easytrip.entity.po.Line2Sales">
+		 INSERT INTO line_2_sales
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.lineId != null">
+				 line_id,
+			</if>
+			<if test="bean.salesId != null">
+				 sales_id,
+			</if>
+			<if test="bean.playTime != null">
+				 play_time,
+			</if>
+			<if test="bean.sort != null">
+				 sort,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.lineId!=null">
+				 #{bean.lineId},
+			</if>
+			<if test="bean.salesId!=null">
+				 #{bean.salesId},
+			</if>
+			<if test="bean.playTime!=null">
+				 #{bean.playTime},
+			</if>
+			<if test="bean.sort!=null">
+				 #{bean.sort},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.lineId!=null">
+				 line_id = VALUES(line_id),
+			</if>
+			<if test="bean.salesId!=null">
+				 sales_id = VALUES(sales_id),
+			</if>
+			<if test="bean.playTime!=null">
+				 play_time = VALUES(play_time),
+			</if>
+			<if test="bean.sort!=null">
+				 sort = VALUES(sort),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easytrip.entity.po.Line2Sales">
+		 INSERT INTO line_2_sales(
+			 line_id,
+			 sales_id,
+			 play_time,
+			 sort
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.lineId},
+				 #{item.salesId},
+				 #{item.playTime},
+				 #{item.sort}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easytrip.entity.po.Line2Sales">
+		 INSERT INTO line_2_sales(
+			 line_id,
+			 sales_id,
+			 play_time,
+			 sort
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.lineId},
+				 #{item.salesId},
+				 #{item.playTime},
+				 #{item.sort}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			line_id = VALUES(line_id),
+			sales_id = VALUES(sales_id),
+			play_time = VALUES(play_time),
+			sort = VALUES(sort)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easytrip.entity.query.Line2SalesQuery">
+		 UPDATE line_2_sales
+ 		 <set> 
+			<if test="bean.lineId != null">
+				 line_id = #{bean.lineId},
+			</if>
+			<if test="bean.salesId != null">
+				 sales_id = #{bean.salesId},
+			</if>
+			<if test="bean.playTime != null">
+				 play_time = #{bean.playTime},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from line_2_sales
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据LineIdAndSalesId修改-->
+	<update id="updateByLineIdAndSalesId" parameterType="com.easytrip.entity.po.Line2Sales">
+		 UPDATE line_2_sales
+ 		 <set> 
+			<if test="bean.playTime != null">
+				 play_time = #{bean.playTime},
+			</if>
+			<if test="bean.sort != null">
+				 sort = #{bean.sort},
+			</if>
+ 		 </set>
+ 		 where line_id=#{lineId} and sales_id=#{salesId}
+	</update>
+
+	<!-- 根据LineIdAndSalesId删除-->
+	<delete id="deleteByLineIdAndSalesId">
+		delete from line_2_sales where line_id=#{lineId} and sales_id=#{salesId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByLineIdAndSalesId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from line_2_sales where line_id=#{lineId} and sales_id=#{salesId}
+	</select>
+
+	<select id="selectSalesIdStringListMap" resultMap="base_result_map">
+		select line_id,sales_id ,play_time from line_2_sales where line_id in (<foreach collection="lineIdList" item="item" separator=",">(#{item})</foreach>) ;
+	</select>
+</mapper>

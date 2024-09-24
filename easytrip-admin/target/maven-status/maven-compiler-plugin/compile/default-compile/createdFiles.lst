@@ -1,0 +1,15 @@
+com\easytrip\annotation\GlobalInterceptor.class
+com\easytrip\controller\FileController.class
+com\easytrip\controller\SysRoleController.class
+com\easytrip\EasytripAdminApplication.class
+com\easytrip\controller\WebFeedbackController.class
+com\easytrip\controller\WebArticleController.class
+com\easytrip\aspect\OperationAspect.class
+com\easytrip\controller\BoardController.class
+com\easytrip\controller\ABaseController.class
+com\easytrip\controller\SysAccountController.class
+com\easytrip\controller\AGlobalExceptionHandlerController.class
+com\easytrip\controller\LoginController.class
+com\easytrip\controller\SysMenuController.class
+com\easytrip\controller\WebCarouselController.class
+com\easytrip\controller\WebUserInfoController.class
